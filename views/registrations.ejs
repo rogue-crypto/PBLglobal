@@ -1,382 +1,504 @@
-<!-- registration-details.ejs -->
-<div class="registration-details-container">
-  <h2 class="section-title">Player Details</h2>
-  
-  <% if (registration.players && registration.players.length > 0) { %>
-    <div class="players-list">
-      <% registration.players.forEach((player, index) => { %>
-        <div class="player-card">
-          <div class="player-header">
-            <h3 class="player-name"><%= player.name %></h3>
-            <span class="player-index">Player #<%= index + 1 %></span>
-          </div>
-          
-          <div class="player-info">
-            <div class="info-column">
-              <p><strong>Date of Birth:</strong> <%= new Date(player.dateOfBirth).toLocaleDateString() %></p>
-              <p><strong>School ID:</strong> <%= player.schoolId %></p>
-              <p><strong>Parent Email:</strong> <%= player.parentEmail %></p>
-              <p><strong>Parent Phone:</strong> <%= player.parentPhone %></p>
-            </div>
-            
-            <div class="document-column">
-              <h4>Identity Document</h4>
-              <% if (player.aadharPhoto) { %>
-                <div class="image-container" id="image-container-<%= index %>">
-                  <div class="image-wrapper">
-                    <img 
-                      src="<%= player.aadharPhoto.startsWith('/') ? player.aadharPhoto : '/' + player.aadharPhoto %>" 
-                      alt="Aadhar Photo" 
-                      class="aadhar-image" 
-                      id="aadhar-image-<%= index %>"
-                      onerror="handleImageError(this, '<%= index %>')"
-                      onload="handleImageSuccess(this, '<%= index %>')"
-                    />
-                    <div class="image-overlay">
-                      <button class="btn-enlarge" onclick="enlargeImage('<%= player.aadharPhoto.startsWith('/') ? player.aadharPhoto : '/' + player.aadharPhoto %>')">
-                        <i class="fa fa-search-plus"></i> View Full Size
-                      </button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Registration Viewer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card {
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .registration-details {
+            display: none;
+        }
+        .player-card {
+            border-left: 4px solid #007bff;
+        }
+        .sort-controls {
+            margin-bottom: 20px;
+        }
+        .badge-pending {
+            background-color: #ffc107;
+        }
+        .badge-approved {
+            background-color: #28a745;
+        }
+        .badge-rejected {
+            background-color: #dc3545;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .aadhar-thumbnail {
+            max-width: 100px;
+            cursor: pointer;
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Tournament Registration Viewer</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Tournament List</h5>
                     </div>
-                  </div>
-                  <div class="image-status" id="image-status-<%= index %>">
-                    <div class="spinner">
-                      <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </div>
+                    <div class="card-body">
+                        <div class="sort-controls">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Sort By</span>
+                                        <select id="sortOption" class="form-select">
+                                            <option value="startDate-asc">Start Date (Oldest First)</option>
+                                            <option value="startDate-desc" selected>Start Date (Newest First)</option>
+                                            <option value="name-asc">Name (A-Z)</option>
+                                            <option value="name-desc">Name (Z-A)</option>
+                                            <option value="registrations-asc">Registrations (Low to High)</option>
+                                            <option value="registrations-desc">Registrations (High to Low)</option>
+                                        </select>
+                                        <button id="sortButton" class="btn btn-outline-primary">Sort</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Search tournaments...">
+                                        <button id="searchButton" class="btn btn-outline-primary">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tournamentContainer">
+                            <!-- Tournaments will be loaded here -->
+                            <div class="empty-state">
+                                <h3>Loading tournaments...</h3>
+                                <p>Please wait while we fetch tournament data.</p>
+                            </div>
+                        </div>
                     </div>
-                    <p class="status-text">Loading image...</p>
-                  </div>
-                  <p class="image-path">
-                    <small>Path: <%= player.aadharPhoto %></small>
-                  </p>
                 </div>
-              <% } else { %>
-                <div class="no-image">
-                  <div class="no-image-placeholder">
-                    <i class="fa fa-image"></i>
-                    <p>No document uploaded</p>
-                  </div>
-                </div>
-              <% } %>
             </div>
-          </div>
         </div>
-      <% }) %>
     </div>
-  <% } else { %>
-    <div class="empty-state">
-      <i class="fa fa-user-times"></i>
-      <p>No player information available</p>
-    </div>
-  <% } %>
-</div>
 
-<!-- Image Preview Modal -->
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Document Preview</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <img id="previewImage" src="" class="img-fluid" alt="Document Preview">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Styling for the template -->
-<style>
-  .registration-details-container {
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-  }
-  
-  .section-title {
-    color: #0d6efd;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #dee2e6;
-  }
-  
-  .players-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .player-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .player-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .player-header {
-    background-color: #f1f8ff;
-    padding: 15px 20px;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .player-name {
-    margin: 0;
-    color: #0d6efd;
-    font-size: 1.2rem;
-  }
-  
-  .player-index {
-    background-color: #0d6efd;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
-  
-  .player-info {
-    display: flex;
-    padding: 20px;
-    gap: 20px;
-  }
-  
-  .info-column {
-    flex: 1;
-  }
-  
-  .document-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .image-container {
-    width: 100%;
-    max-width: 300px;
-    margin-top: 10px;
-  }
-  
-  .image-wrapper {
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-  }
-  
-  .aadhar-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    transition: all 0.3s ease;
-  }
-  
-  .image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .image-wrapper:hover .image-overlay {
-    opacity: 1;
-  }
-  
-  .btn-enlarge {
-    background-color: white;
-    border: none;
-    color: #0d6efd;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-enlarge:hover {
-    background-color: #0d6efd;
-    color: white;
-  }
-  
-  .image-status {
-    margin-top: 10px;
-    text-align: center;
-  }
-  
-  .spinner {
-    margin-bottom: 10px;
-  }
-  
-  .status-text {
-    margin: 0;
-    color: #6c757d;
-  }
-  
-  .image-path {
-    margin-top: 5px;
-    color: #6c757d;
-    word-break: break-all;
-    text-align: center;
-  }
-  
-  .no-image {
-    width: 100%;
-    max-width: 300px;
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f9fa;
-    border: 1px dashed #dee2e6;
-    border-radius: 8px;
-  }
-  
-  .no-image-placeholder {
-    text-align: center;
-    color: #6c757d;
-  }
-  
-  .no-image-placeholder i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: #6c757d;
-  }
-  
-  .empty-state i {
-    font-size: 3rem;
-    margin-bottom: 20px;
-  }
-  
-  .error-message {
-    color: #dc3545;
-    margin-top: 10px;
-    text-align: center;
-  }
-  
-  .error-suggestions {
-    background-color: #f8d7da;
-    border: 1px solid #f5c2c7;
-    border-radius: 4px;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 0.9rem;
-  }
-</style>
-
-<!-- JavaScript for image handling -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Initialize any Font Awesome icons that might be used
-    if (typeof loadFontAwesome === 'function') {
-      loadFontAwesome();
-    }
-  });
-  
-  // Handle image loading errors
-  function handleImageError(img, index) {
-    console.error('Image failed to load:', img.src);
-    
-    // Hide the image
-    img.style.display = 'none';
-    
-    // Update status message
-    const statusElement = document.getElementById(`image-status-${index}`);
-    if (statusElement) {
-      statusElement.innerHTML = `
-        <div class="error-message">
-          <i class="fa fa-exclamation-triangle"></i>
-          <p>Failed to load image</p>
+    <!-- Registration Detail Modal -->
+    <div class="modal fade" id="registrationDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Registration Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="registrationDetailContent">
+                    <!-- Registration details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-        <div class="error-suggestions">
-          <p><strong>Possible solutions:</strong></p>
-          <ul>
-            <li>Check if the file exists at path: ${img.src}</li>
-            <li>Verify file permissions</li>
-            <li>Ensure the path is correctly configured in the server</li>
-          </ul>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Document Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="" class="img-fluid" alt="Document Preview">
+                </div>
+            </div>
         </div>
-      `;
-    }
-    
-    // Add retry button
-    const imageContainer = document.getElementById(`image-container-${index}`);
-    if (imageContainer) {
-      const retryButton = document.createElement('button');
-      retryButton.className = 'btn btn-outline-primary mt-2';
-      retryButton.innerHTML = '<i class="fa fa-refresh"></i> Try Again';
-      retryButton.onclick = function() {
-        // Reset the image src to try loading again
-        img.style.display = 'block';
-        img.src = img.src + '?t=' + new Date().getTime(); // Add timestamp to prevent caching
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let tournaments = [];
+        let registrationsMap = {};
         
-        // Reset status message
-        statusElement.innerHTML = `
-          <div class="spinner">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          <p class="status-text">Loading image...</p>
-        `;
-      };
-      imageContainer.appendChild(retryButton);
-    }
-  }
-  
-  // Handle successful image loading
-  function handleImageSuccess(img, index) {
-    console.log('Image loaded successfully:', img.src);
-    
-    // Show the image
-    img.style.display = 'block';
-    
-    // Hide the loading indicator
-    const statusElement = document.getElementById(`image-status-${index}`);
-    if (statusElement) {
-      statusElement.style.display = 'none';
-    }
-  }
-  
-  // Function to enlarge image in modal
-  function enlargeImage(src) {
-    const previewImage = document.getElementById('previewImage');
-    previewImage.src = src;
-    
-    const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
-    modal.show();
-  }
-  
-  // Helper function to load Font Awesome if it's not already loaded
-  function loadFontAwesome() {
-    if (!document.querySelector('link[href*="font-awesome"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
-      document.head.appendChild(link);
-    }
-  }
-</script>
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        // Fetch all tournaments
+        async function fetchTournaments() {
+            try {
+                const response = await fetch('/api/tournaments');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch tournaments');
+                }
+                tournaments = await response.json();
+                await fetchAllRegistrations();
+                sortAndDisplayTournaments();
+            } catch (error) {
+                console.error('Error fetching tournaments:', error);
+                document.getElementById('tournamentContainer').innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to load tournaments. Please refresh the page and try again.
+                    </div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Fetch registrations for all tournaments
+        async function fetchAllRegistrations() {
+            try {
+                for (const tournament of tournaments) {
+                    const response = await fetch(`/api/tournament-registrations/${tournament._id}`);
+                    if (response.ok) {
+                        const registrations = await response.json();
+                        registrationsMap[tournament._id] = registrations;
+                        // Add registration count to tournament object for sorting
+                        tournament.registrationCount = registrations.length;
+                    } else {
+                        registrationsMap[tournament._id] = [];
+                        tournament.registrationCount = 0;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching registrations:', error);
+            }
+        }
+        
+        // Sort and display tournaments
+        function sortAndDisplayTournaments() {
+            const sortOption = document.getElementById('sortOption').value;
+            const [field, direction] = sortOption.split('-');
+            
+            tournaments.sort((a, b) => {
+                if (field === 'startDate') {
+                    const dateA = new Date(a.startDate);
+                    const dateB = new Date(b.startDate);
+                    return direction === 'asc' ? dateA - dateB : dateB - dateA;
+                } else if (field === 'name') {
+                    return direction === 'asc' 
+                        ? a.name.localeCompare(b.name) 
+                        : b.name.localeCompare(a.name);
+                } else if (field === 'registrations') {
+                    return direction === 'asc' 
+                        ? a.registrationCount - b.registrationCount 
+                        : b.registrationCount - a.registrationCount;
+                }
+                return 0;
+            });
+            
+            displayTournaments(tournaments);
+            hideLoading();
+        }
+        
+        // Display tournaments
+        function displayTournaments(tournamentsToDisplay) {
+            const container = document.getElementById('tournamentContainer');
+            
+            if (tournamentsToDisplay.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No tournaments found</h3>
+                        <p>There are no tournaments matching your criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            tournamentsToDisplay.forEach(tournament => {
+                const registrations = registrationsMap[tournament._id] || [];
+                
+                html += `
+                    <div class="card mb-4 tournament-card">
+                        <div class="card-header bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">${tournament.name}</h5>
+                                <span class="badge bg-primary">${registrations.length} Registrations</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Start Date:</strong> ${formatDate(tournament.startDate)}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>End Date:</strong> ${formatDate(tournament.endDate)}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Venue:</strong> ${tournament.venue}
+                                </div>
+                            </div>
+                            ${tournament.description ? `<p>${tournament.description}</p>` : ''}
+                            
+                            <h6 class="mt-3 mb-3">Registered Teams</h6>
+                            
+                            ${registrations.length === 0 ? `
+                                <div class="alert alert-info">
+                                    No teams registered for this tournament yet.
+                                </div>
+                            ` : `
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Institution</th>
+                                                <th>Contact</th>
+                                                <th>Players</th>
+                                                <th>Status</th>
+                                                <th>Registration Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${registrations.map(registration => `
+                                                <tr>
+                                                    <td>${registration.institutionName}</td>
+                                                    <td>
+                                                        <small>${registration.contactEmail}<br>${registration.contactPhone}</small>
+                                                    </td>
+                                                    <td>${registration.players ? registration.players.length : 0} players</td>
+                                                    <td>
+                                                        <span class="badge badge-${registration.status}">${registration.status.toUpperCase()}</span>
+                                                    </td>
+                                                    <td>${formatDate(registration.registrationDate)}</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary view-details" 
+                                                            data-registration-id="${registration._id}">
+                                                            View Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', () => {
+                    fetchRegistrationDetails(button.getAttribute('data-registration-id'));
+                });
+            });
+        }
+        
+        // Fetch single registration details
+        async function fetchRegistrationDetails(registrationId) {
+            try {
+                showLoading();
+                const response = await fetch(`/api/registrations/${registrationId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch registration details');
+                }
+                
+                const registration = await response.json();
+                displayRegistrationDetails(registration);
+            } catch (error) {
+                console.error('Error fetching registration details:', error);
+                document.getElementById('registrationDetailContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to load registration details. Please try again.
+                    </div>
+                `;
+            } finally {
+                hideLoading();
+                const modal = new bootstrap.Modal(document.getElementById('registrationDetailModal'));
+                modal.show();
+            }
+        }
+        
+        // Display registration details in modal
+        function displayRegistrationDetails(registration) {
+            let playersHtml = '';
+            
+            if (registration.players && registration.players.length > 0) {
+                playersHtml = `
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date of Birth</th>
+                                    <th>School ID</th>
+                                    <th>Parent Contact</th>
+                                    <th>Aadhar Photo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${registration.players.map(player => `
+                                    <tr>
+                                        <td>${player.name}</td>
+                                        <td>${formatDate(player.dateOfBirth)}</td>
+                                        <td>${player.schoolId}</td>
+                                        <td>
+                                            ${player.parentEmail}<br>
+                                            ${player.parentPhone}
+                                        </td>
+                                        <td>
+                                            ${player.aadharPhoto ? 
+                                                `<img src="/${player.aadharPhoto}" class="aadhar-thumbnail" 
+                                                alt="Aadhar" data-image-path="/${player.aadharPhoto}">` : 
+                                                'No photo uploaded'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                playersHtml = `
+                    <div class="alert alert-warning">
+                        No players added to this registration.
+                    </div>
+                `;
+            }
+            
+            const statusClass = {
+                'pending': 'text-warning',
+                'approved': 'text-success',
+                'rejected': 'text-danger'
+            };
+            
+            document.getElementById('registrationDetailContent').innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Registration for ${registration.tournamentName || 'Tournament'}</h4>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Institution:</dt>
+                                    <dd class="col-sm-8">${registration.institutionName}</dd>
+                                    
+                                    <dt class="col-sm-4">Contact Email:</dt>
+                                    <dd class="col-sm-8">${registration.contactEmail}</dd>
+                                    
+                                    <dt class="col-sm-4">Contact Phone:</dt>
+                                    <dd class="col-sm-8">${registration.contactPhone}</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Status:</dt>
+                                    <dd class="col-sm-8">
+                                        <span class="${statusClass[registration.status]}">
+                                            ${registration.status.toUpperCase()}
+                                        </span>
+                                    </dd>
+                                    
+                                    <dt class="col-sm-4">Registration Date:</dt>
+                                    <dd class="col-sm-8">${formatDate(registration.registrationDate)}</dd>
+                                    
+                                    <dt class="col-sm-4">Total Players:</dt>
+                                    <dd class="col-sm-8">${registration.players ? registration.players.length : 0}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4">Players Information</h5>
+                        ${playersHtml}
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to images
+            document.querySelectorAll('.aadhar-thumbnail').forEach(img => {
+                img.addEventListener('click', () => {
+                    const imagePath = img.getAttribute('data-image-path');
+                    document.getElementById('previewImage').src = imagePath;
+                    const imageModal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+                    imageModal.show();
+                });
+            });
+        }
+        
+        // Search tournaments
+        function searchTournaments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayTournaments(tournaments);
+                return;
+            }
+            
+            const filteredTournaments = tournaments.filter(tournament => {
+                return tournament.name.toLowerCase().includes(searchTerm) ||
+                       tournament.venue.toLowerCase().includes(searchTerm) ||
+                       (tournament.description && tournament.description.toLowerCase().includes(searchTerm));
+            });
+            
+            displayTournaments(filteredTournaments);
+        }
+        
+        // Loading indicator functions
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTournaments();
+            
+            document.getElementById('sortButton').addEventListener('click', sortAndDisplayTournaments);
+            document.getElementById('searchButton').addEventListener('click', searchTournaments);
+            document.getElementById('searchInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    searchTournaments();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
