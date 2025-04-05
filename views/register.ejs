@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Registration</title>
+  <style>
+    :root {
+      --primary: #0062ff;
+      --primary-dark: #0046b8;
+      --primary-light: #e6f0ff;
+      --secondary: #173f7a;
+      --accent: #00c2ff;
+      --light: #f8faff;
+      --dark: #0a1f3d;
+      --gradient: linear-gradient(135deg, #0062ff 0%, #00c2ff 100%);
+      --shadow-sm: 0 4px 6px rgba(10, 31, 61, 0.05);
+      --shadow-md: 0 6px 12px rgba(10, 31, 61, 0.08);
+      --shadow-lg: 0 12px 24px rgba(10, 31, 61, 0.12);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: var(--gradient);
+      color: white;
+      padding: 15px 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    header h1 {
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .form-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px;
+      margin: 30px 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .required::after {
+      content: '*';
+      color: #f00;
+      margin-left: 4px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: var(--dark);
+      border: 1px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+
+    .player-card {
+      background-color: var(--primary-light);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .player-card h3 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .flex-item {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .remove-player {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: rgba(255, 255, 255, 0.7);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #dc3545;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .remove-player:hover {
+      background: #dc3545;
+      color: white;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 6px;
+      border: 1px dashed var(--primary);
+      text-align: center;
+      width: 100%;
+      font-weight: 500;
+    }
+
+    .file-name {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .tournament-card {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .tournament-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tournament-card.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .tournament-card h3 {
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+
+    .tournament-details {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .tournament-details span {
+      margin-right: 15px;
+    }
+
+    footer {
+      background-color: var(--secondary);
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 50px;
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .step {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: #e9ecef;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-weight: 600;
+      margin: 0 40px;
+    }
+
+    .step.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .step.completed {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 17px;
+      left: -40px;
+      width: 40px;
+      height: 2px;
+      background-color: #e9ecef;
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      top: 17px;
+      right: -40px;
+      width: 40px;
+      height: 2px;
+      background-color: #e9ecef;
+    }
+
+    .step:first-child::before,
+    .step:last-child::after {
+      display: none;
+    }
+
+    .step.active::after,
+    .step.completed::after,
+    .step.completed::before {
+      background-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .form-container {
+        padding: 20px;
+      }
+      
+      .step {
+        margin: 0 20px;
+      }
+      
+      .step::before {
+        left: -20px;
+        width: 20px;
+      }
+      
+      .step::after {
+        right: -20px;
+        width: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>PBL Registration</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="form-container">
+      <div id="alert-container"></div>
+      
+      <div class="step-indicator">
+        <div class="step active" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+      </div>
+      
+      <!-- Step 1: Tournament Selection -->
+      <div id="tournament-section" class="form-section">
+        <h2>Select Tournament</h2>
+        <div id="tournaments-container">
+          <div class="loader">Loading tournaments...</div>
+        </div>
+      </div>
+      
+      <!-- Step 2: Institution Info -->
+      <div id="institution-section" class="form-section hidden">
+        <h2>Institution Information</h2>
+        <div class="form-group">
+          <label for="institutionName" class="required">Institution Name</label>
+          <input type="text" id="institutionName" name="institutionName" required>
+        </div>
+        
+        <div class="flex-row">
+          <div class="form-group flex-item">
+            <label for="contactEmail" class="required">Contact Email</label>
+            <input type="email" id="contactEmail" name="contactEmail" required>
+          </div>
+          
+          <div class="form-group flex-item">
+            <label for="contactPhone" class="required">Contact Phone</label>
+            <input type="tel" id="contactPhone" name="contactPhone" required>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Step 3: Player Info -->
+      <div id="players-section" class="form-section hidden">
+        <h2>Player Information</h2>
+        <p>Add up to 12 players for your team</p>
+        
+        <div id="players-container"></div>
+        
+        <button type="button" id="add-player" class="btn btn-secondary" style="margin-top: 20px;">
+          <i class="fas fa-plus"></i> Add Player
+        </button>
+      </div>
+      
+      <div class="buttons-container">
+        <button type="button" id="prev-btn" class="btn btn-secondary hidden">Previous</button>
+        <button type="button" id="next-btn" class="btn">Next</button>
+        <button type="button" id="submit-btn" class="btn hidden">Submit Registration</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 PBL. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elements
+      const tournamentSection = document.getElementById('tournament-section');
+      const institutionSection = document.getElementById('institution-section');
+      const playersSection = document.getElementById('players-section');
+      const tournamentsContainer = document.getElementById('tournaments-container');
+      const playersContainer = document.getElementById('players-container');
+      const addPlayerBtn = document.getElementById('add-player');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      const alertContainer = document.getElementById('alert-container');
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const step3 = document.getElementById('step3');
+      
+      // Variables
+      let currentStep = 1;
+      let selectedTournamentId = null;
+      let players = [];
+      
+      // Initialize
+      fetchTournaments();
+      
+      // Event Listeners
+      addPlayerBtn.addEventListener('click', addPlayerForm);
+      prevBtn.addEventListener('click', goToPreviousStep);
+      nextBtn.addEventListener('click', goToNextStep);
+      submitBtn.addEventListener('click', submitRegistration);
+      
+      // Functions
+      function fetchTournaments() {
+        fetch('/api/tournaments')
+          .then(response => response.json())
+          .then(tournaments => {
+            displayTournaments(tournaments);
+          })
+          .catch(error => {
+            showAlert('Error loading tournaments. Please try again.', 'danger');
+            console.error('Error:', error);
+          });
+      }
+      
+      function displayTournaments(tournaments) {
+        if (tournaments.length === 0) {
+          tournamentsContainer.innerHTML = '<p>No upcoming tournaments found.</p>';
+          return;
+        }
+        
+        tournamentsContainer.innerHTML = '';
+        
+        const upcomingTournaments = tournaments.filter(t => new Date(t.endDate) >= new Date());
+        
+        upcomingTournaments.forEach(tournament => {
+          const card = document.createElement('div');
+          card.className = 'tournament-card';
+          card.dataset.id = tournament._id;
+          
+          const startDate = new Date(tournament.startDate).toLocaleDateString();
+          const endDate = new Date(tournament.endDate).toLocaleDateString();
+          
+          card.innerHTML = `
+            <h3>${tournament.name}</h3>
+            <div class="tournament-details">
+              <span><strong>Dates:</strong> ${startDate} - ${endDate}</span>
+              <span><strong>Venue:</strong> ${tournament.venue}</span>
+              ${tournament.price ? `<span><strong>Price:</strong> rs ${tournament.price}</span>` : ''}
+            </div>
+          `;
+          
+          card.addEventListener('click', function() {
+            document.querySelectorAll('.tournament-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedTournamentId = this.dataset.id;
+          });
+          
+          tournamentsContainer.appendChild(card);
+        });
+      }
+      
+      function addPlayerForm() {
+        if (players.length >= 12) {
+          showAlert('Maximum 12 players allowed.', 'danger');
+          return;
+        }
+        
+        const playerNumber = players.length + 1;
+        const playerId = Date.now();
+        
+        const playerCard = document.createElement('div');
+        playerCard.className = 'player-card';
+        playerCard.dataset.id = playerId;
+        
+        playerCard.innerHTML = `
+          <button type="button" class="remove-player" data-id="${playerId}">&times;</button>
+          <h3>Player ${playerNumber}</h3>
+          
+          <div class="form-group">
+            <label for="name${playerId}" class="required">Full Name</label>
+            <input type="text" id="name${playerId}" name="name" required>
+          </div>
+          
+          <div class="flex-row">
+            <div class="form-group flex-item">
+              <label for="dob${playerId}" class="required">Date of Birth</label>
+              <input type="date" id="dob${playerId}" name="dateOfBirth" required>
+            </div>
+            
+            <div class="form-group flex-item">
+              <label for="schoolId${playerId}" class="required">School ID</label>
+              <input type="text" id="schoolId${playerId}" name="schoolId" required>
+            </div>
+          </div>
+          
+          <div class="flex-row">
+            <div class="form-group flex-item">
+              <label for="parentEmail${playerId}" class="required">Parent Email</label>
+              <input type="email" id="parentEmail${playerId}" name="parentEmail" required>
+            </div>
+            
+            <div class="form-group flex-item">
+              <label for="parentPhone${playerId}" class="required">Parent Phone</label>
+              <input type="tel" id="parentPhone${playerId}" name="parentPhone" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="aadharPhoto${playerId}" class="required">Aadhar Card Photo</label>
+            <div class="file-input-wrapper">
+              <div class="file-input-button">Choose File</div>
+              <input type="file" id="aadharPhoto${playerId}" name="aadharPhoto" accept="image/*" required>
+            </div>
+            <div class="file-name" id="fileName${playerId}">No file chosen</div>
+          </div>
+        `;
+        
+        playersContainer.appendChild(playerCard);
+        
+        // Add file input listener
+        const fileInput = document.getElementById(`aadharPhoto${playerId}`);
+        const fileNameDisplay = document.getElementById(`fileName${playerId}`);
+        
+        fileInput.addEventListener('change', function() {
+          if (this.files.length > 0) {
+            fileNameDisplay.textContent = this.files[0].name;
+          } else {
+            fileNameDisplay.textContent = 'No file chosen';
+          }
+        });
+        
+        // Add remove button listener
+        const removeBtn = playerCard.querySelector('.remove-player');
+        removeBtn.addEventListener('click', function() {
+          const idToRemove = this.dataset.id;
+          playerCard.remove();
+          updatePlayerNumbers();
+        });
+        
+        players.push({
+          id: playerId,
+          index: playerNumber
+        });
+      }
+      
+      function updatePlayerNumbers() {
+        players = [];
+        const playerCards = document.querySelectorAll('.player-card');
+        
+        playerCards.forEach((card, index) => {
+          const playerNumber = index + 1;
+          const playerId = card.dataset.id;
+          
+          card.querySelector('h3').textContent = `Player ${playerNumber}`;
+          
+          players.push({
+            id: playerId,
+            index: playerNumber
+          });
+        });
+      }
+      
+      function goToPreviousStep() {
+        if (currentStep === 1) return;
+        
+        if (currentStep === 2) {
+          institutionSection.classList.add('hidden');
+          tournamentSection.classList.remove('hidden');
+          prevBtn.classList.add('hidden');
+          step2.classList.remove('active');
+          step1.classList.add('active');
+          currentStep = 1;
+        } else if (currentStep === 3) {
+          playersSection.classList.add('hidden');
+          institutionSection.classList.remove('hidden');
+          submitBtn.classList.add('hidden');
+          nextBtn.classList.remove('hidden');
+          step3.classList.remove('active');
+          step2.classList.add('active');
+          currentStep = 2;
+        }
+      }
+      
+      function goToNextStep() {
+        if (currentStep === 1) {
+          if (!selectedTournamentId) {
+            showAlert('Please select a tournament.', 'danger');
+            return;
+          }
+          
+          tournamentSection.classList.add('hidden');
+          institutionSection.classList.remove('hidden');
+          prevBtn.classList.remove('hidden');
+          step1.classList.remove('active');
+          step1.classList.add('completed');
+          step2.classList.add('active');
+          currentStep = 2;
+        } else if (currentStep === 2) {
+          const institutionName = document.getElementById('institutionName').value;
+          const contactEmail = document.getElementById('contactEmail').value;
+          const contactPhone = document.getElementById('contactPhone').value;
+          
+          if (!institutionName || !contactEmail || !contactPhone) {
+            showAlert('Please fill all required institution information.', 'danger');
+            return;
+          }
+          
+          institutionSection.classList.add('hidden');
+          playersSection.classList.remove('hidden');
+          nextBtn.classList.add('hidden');
+          submitBtn.classList.remove('hidden');
+          step2.classList.remove('active');
+          step2.classList.add('completed');
+          step3.classList.add('active');
+          currentStep = 3;
+          
+          // Add first player form if none exists
+          if (players.length === 0) {
+            addPlayerForm();
+          }
+        }
+      }
+      
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+      }
+      
+      function validatePhone(phone) {
+        const re = /^\d{10}$/;
+        return re.test(String(phone).replace(/[^0-9]/g, ''));
+      }
+      
+      function showAlert(message, type) {
+        alertContainer.innerHTML = `
+          <div class="alert alert-${type}">
+            ${message}
+          </div>
+        `;
+        
+        setTimeout(() => {
+          alertContainer.innerHTML = '';
+        }, 5000);
+      }
+      
+      function submitRegistration() {
+        if (players.length === 0) {
+          showAlert('Please add at least one player.', 'danger');
+          return;
+        }
+        
+        // Validate form
+        const institutionName = document.getElementById('institutionName').value;
+        const contactEmail = document.getElementById('contactEmail').value;
+        const contactPhone = document.getElementById('contactPhone').value;
+        
+        if (!institutionName || !contactEmail || !contactPhone) {
+          showAlert('Please fill all required institution information.', 'danger');
+          goToPreviousStep();
+          return;
+        }
+        
+        if (!validateEmail(contactEmail)) {
+          showAlert('Please enter a valid email address.', 'danger');
+          goToPreviousStep();
+          return;
+        }
+        
+        // Collect player data
+        const playersData = [];
+        let isValid = true;
+        
+        document.querySelectorAll('.player-card').forEach((card, index) => {
+          const playerId = card.dataset.id;
+          
+          const name = document.getElementById(`name${playerId}`).value;
+          const dateOfBirth = document.getElementById(`dob${playerId}`).value;
+          const schoolId = document.getElementById(`schoolId${playerId}`).value;
+          const parentEmail = document.getElementById(`parentEmail${playerId}`).value;
+          const parentPhone = document.getElementById(`parentPhone${playerId}`).value;
+          const aadharPhoto = document.getElementById(`aadharPhoto${playerId}`).files[0];
+          
+          if (!name || !dateOfBirth || !schoolId || !parentEmail || !parentPhone || !aadharPhoto) {
+            showAlert(`Please fill all required fields for Player ${index + 1}.`, 'danger');
+            isValid = false;
+            return;
+          }
+          
+          if (!validateEmail(parentEmail)) {
+            showAlert(`Please enter a valid parent email for Player ${index + 1}.`, 'danger');
+            isValid = false;
+            return;
+          }
+          
+          playersData.push({
+            name,
+            dateOfBirth,
+            schoolId,
+            parentEmail,
+            parentPhone
+          });
+        });
+        
+        if (!isValid) return;
+        
+        // Create FormData object for file uploads
+        const formData = new FormData();
+        formData.append('tournamentId', selectedTournamentId);
+        formData.append('institutionName', institutionName);
+        formData.append('contactEmail', contactEmail);
+        formData.append('contactPhone', contactPhone);
+        formData.append('playerData', JSON.stringify(playersData));
+        
+        // Add all aadhar photos
+        document.querySelectorAll('.player-card').forEach(card => {
+          const playerId = card.dataset.id;
+          const aadharFile = document.getElementById(`aadharPhoto${playerId}`).files[0];
+          if (aadharFile) {
+            formData.append('aadharPhotos', aadharFile);
+          }
+        });
+        
+        // Submit the form
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        fetch('/api/team-registration', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showAlert('Registration submitted successfully!', 'success');
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 3000);
+          } else {
+            showAlert('Registration failed: ' + (data.error || 'Unknown error'), 'danger');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Registration';
+          }
+        })
+        .catch(error => {
+          showAlert('Registration failed. Please try again.', 'danger');
+          console.error('Error:', error);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Registration';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

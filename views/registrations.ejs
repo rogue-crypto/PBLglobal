@@ -1,0 +1,382 @@
+<!-- registration-details.ejs -->
+<div class="registration-details-container">
+  <h2 class="section-title">Player Details</h2>
+  
+  <% if (registration.players && registration.players.length > 0) { %>
+    <div class="players-list">
+      <% registration.players.forEach((player, index) => { %>
+        <div class="player-card">
+          <div class="player-header">
+            <h3 class="player-name"><%= player.name %></h3>
+            <span class="player-index">Player #<%= index + 1 %></span>
+          </div>
+          
+          <div class="player-info">
+            <div class="info-column">
+              <p><strong>Date of Birth:</strong> <%= new Date(player.dateOfBirth).toLocaleDateString() %></p>
+              <p><strong>School ID:</strong> <%= player.schoolId %></p>
+              <p><strong>Parent Email:</strong> <%= player.parentEmail %></p>
+              <p><strong>Parent Phone:</strong> <%= player.parentPhone %></p>
+            </div>
+            
+            <div class="document-column">
+              <h4>Identity Document</h4>
+              <% if (player.aadharPhoto) { %>
+                <div class="image-container" id="image-container-<%= index %>">
+                  <div class="image-wrapper">
+                    <img 
+                      src="<%= player.aadharPhoto.startsWith('/') ? player.aadharPhoto : '/' + player.aadharPhoto %>" 
+                      alt="Aadhar Photo" 
+                      class="aadhar-image" 
+                      id="aadhar-image-<%= index %>"
+                      onerror="handleImageError(this, '<%= index %>')"
+                      onload="handleImageSuccess(this, '<%= index %>')"
+                    />
+                    <div class="image-overlay">
+                      <button class="btn-enlarge" onclick="enlargeImage('<%= player.aadharPhoto.startsWith('/') ? player.aadharPhoto : '/' + player.aadharPhoto %>')">
+                        <i class="fa fa-search-plus"></i> View Full Size
+                      </button>
+                    </div>
+                  </div>
+                  <div class="image-status" id="image-status-<%= index %>">
+                    <div class="spinner">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                    <p class="status-text">Loading image...</p>
+                  </div>
+                  <p class="image-path">
+                    <small>Path: <%= player.aadharPhoto %></small>
+                  </p>
+                </div>
+              <% } else { %>
+                <div class="no-image">
+                  <div class="no-image-placeholder">
+                    <i class="fa fa-image"></i>
+                    <p>No document uploaded</p>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <i class="fa fa-user-times"></i>
+      <p>No player information available</p>
+    </div>
+  <% } %>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Document Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="previewImage" src="" class="img-fluid" alt="Document Preview">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Styling for the template -->
+<style>
+  .registration-details-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .section-title {
+    color: #0d6efd;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .player-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .player-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .player-header {
+    background-color: #f1f8ff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .player-name {
+    margin: 0;
+    color: #0d6efd;
+    font-size: 1.2rem;
+  }
+  
+  .player-index {
+    background-color: #0d6efd;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  .player-info {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .info-column {
+    flex: 1;
+  }
+  
+  .document-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .image-container {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 10px;
+  }
+  
+  .image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+  }
+  
+  .aadhar-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: all 0.3s ease;
+  }
+  
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .image-wrapper:hover .image-overlay {
+    opacity: 1;
+  }
+  
+  .btn-enlarge {
+    background-color: white;
+    border: none;
+    color: #0d6efd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-enlarge:hover {
+    background-color: #0d6efd;
+    color: white;
+  }
+  
+  .image-status {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .spinner {
+    margin-bottom: 10px;
+  }
+  
+  .status-text {
+    margin: 0;
+    color: #6c757d;
+  }
+  
+  .image-path {
+    margin-top: 5px;
+    color: #6c757d;
+    word-break: break-all;
+    text-align: center;
+  }
+  
+  .no-image {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 8px;
+  }
+  
+  .no-image-placeholder {
+    text-align: center;
+    color: #6c757d;
+  }
+  
+  .no-image-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+  }
+  
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .error-suggestions {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+</style>
+
+<!-- JavaScript for image handling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize any Font Awesome icons that might be used
+    if (typeof loadFontAwesome === 'function') {
+      loadFontAwesome();
+    }
+  });
+  
+  // Handle image loading errors
+  function handleImageError(img, index) {
+    console.error('Image failed to load:', img.src);
+    
+    // Hide the image
+    img.style.display = 'none';
+    
+    // Update status message
+    const statusElement = document.getElementById(`image-status-${index}`);
+    if (statusElement) {
+      statusElement.innerHTML = `
+        <div class="error-message">
+          <i class="fa fa-exclamation-triangle"></i>
+          <p>Failed to load image</p>
+        </div>
+        <div class="error-suggestions">
+          <p><strong>Possible solutions:</strong></p>
+          <ul>
+            <li>Check if the file exists at path: ${img.src}</li>
+            <li>Verify file permissions</li>
+            <li>Ensure the path is correctly configured in the server</li>
+          </ul>
+        </div>
+      `;
+    }
+    
+    // Add retry button
+    const imageContainer = document.getElementById(`image-container-${index}`);
+    if (imageContainer) {
+      const retryButton = document.createElement('button');
+      retryButton.className = 'btn btn-outline-primary mt-2';
+      retryButton.innerHTML = '<i class="fa fa-refresh"></i> Try Again';
+      retryButton.onclick = function() {
+        // Reset the image src to try loading again
+        img.style.display = 'block';
+        img.src = img.src + '?t=' + new Date().getTime(); // Add timestamp to prevent caching
+        
+        // Reset status message
+        statusElement.innerHTML = `
+          <div class="spinner">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <p class="status-text">Loading image...</p>
+        `;
+      };
+      imageContainer.appendChild(retryButton);
+    }
+  }
+  
+  // Handle successful image loading
+  function handleImageSuccess(img, index) {
+    console.log('Image loaded successfully:', img.src);
+    
+    // Show the image
+    img.style.display = 'block';
+    
+    // Hide the loading indicator
+    const statusElement = document.getElementById(`image-status-${index}`);
+    if (statusElement) {
+      statusElement.style.display = 'none';
+    }
+  }
+  
+  // Function to enlarge image in modal
+  function enlargeImage(src) {
+    const previewImage = document.getElementById('previewImage');
+    previewImage.src = src;
+    
+    const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+    modal.show();
+  }
+  
+  // Helper function to load Font Awesome if it's not already loaded
+  function loadFontAwesome() {
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+      document.head.appendChild(link);
+    }
+  }
+</script>

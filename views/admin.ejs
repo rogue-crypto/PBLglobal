@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --dark-blue: #0a2540;
+      --mid-blue: #1d3557;
+      --light-blue: #457b9d;
+      --accent-blue: #00b4d8;
+      --white: #ffffff;
+      --light-gray: #f8f9fa;
+      --gray: #e9ecef;
+      --text-color: #6c757d;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--light-gray);
+      color: var(--text-color);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h1, h2, h3 {
+      color: var(--dark-blue);
+      margin-bottom: 1rem;
+    }
+    
+    .header {
+      background-color: var(--dark-blue);
+      color: var(--white);
+      padding: 1.5rem 2rem;
+      box-shadow: var(--box-shadow);
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-right: 1rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .logo i {
+      margin-right: 0.5rem;
+      color: var(--accent-blue);
+    }
+    
+    .container {
+      padding: 2rem;
+      flex: 1;
+    }
+    
+    .section {
+      margin-bottom: 2rem;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-blue);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+    }
+    
+    button {
+      background-color: var(--dark-blue);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      padding: 0.75rem 1.25rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background-color: var(--mid-blue);
+      transform: translateY(-2px);
+    }
+    
+    button.secondary {
+      background-color: transparent;
+      color: var(--dark-blue);
+      border: 1px solid var(--dark-blue);
+    }
+    
+    button.secondary:hover {
+      background-color: rgba(29, 53, 87, 0.1);
+    }
+    
+    button.danger {
+      background-color: #e63946;
+    }
+    
+    button.danger:hover {
+      background-color: #d62828;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 1rem;
+      background-color: var(--white);
+      box-shadow: var(--box-shadow);
+    }
+    
+    th {
+      background-color: var(--dark-blue);
+      color: var(--white);
+      font-weight: 500;
+      text-align: left;
+      padding: 1rem;
+    }
+    
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray);
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover {
+      background-color: var(--light-gray);
+    }
+    
+    .tab {
+      display: flex;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .tab button {
+      background-color: transparent;
+      color: var(--dark-blue);
+      border: none;
+      outline: none;
+      padding: 1rem 1.5rem;
+      flex: 1;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border-radius: 0;
+      transform: none;
+    }
+    
+    .tab button:before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: var(--accent-blue);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+    
+    .tab button:hover:before {
+      transform: scaleX(0.9);
+    }
+    
+    .tab button.active {
+      color: var(--accent-blue);
+      background-color: rgba(0, 180, 216, 0.05);
+    }
+    
+    .tab button.active:before {
+      transform: scaleX(1);
+    }
+    
+    .tabcontent {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray);
+    }
+    
+    .form-header h3 {
+      margin-bottom: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      color: var(--text-color);
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    
+    .badge-upcoming {
+      background-color: rgba(0, 180, 216, 0.2);
+      color: var(--accent-blue);
+    }
+    
+    .badge-completed {
+      background-color: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-color);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--light-blue);
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+      
+      .container {
+        padding: 1rem;
+      }
+      
+      .tab button {
+        padding: 0.75rem;
+      }
+      
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <i class="fas fa-basketball-ball"></i>
+      PBL Tournament Manager
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'tournaments')">
+        <i class="fas fa-trophy"></i> Tournaments
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'matches')">
+        <i class="fas fa-basketball-ball"></i> Matches
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'leaderboards')">
+        <i class="fas fa-medal"></i> Leaderboards
+      </button>
+    </div>
+    
+    <div id="tournaments" class="tabcontent" style="display: block;">
+      <div class="section">
+        <div class="section-header">
+          <h2><i class="fas fa-trophy"></i> Tournaments</h2>
+          <button onclick="showTournamentForm()">
+            <i class="fas fa-plus"></i> Add Tournament
+          </button>
+        </div>
+        
+        <div id="tournamentForm" style="display: none;" class="card">
+          <div class="form-header">
+            <h3 id="tournamentFormTitle"><i class="fas fa-plus-circle"></i> Add Tournament</h3>
+            <button class="close-btn" onclick="cancelTournamentForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <form id="newTournamentForm">
+            <input type="hidden" id="tournamentId">
+            <div class="form-group">
+              <label for="name"><i class="fas fa-tag"></i> Name</label>
+              <input type="text" id="name" placeholder="Enter tournament name" required>
+            </div>
+            <div class="form-group">
+              <label for="startDate"><i class="fas fa-calendar-day"></i> Start Date</label>
+              <input type="date" id="startDate" required>
+            </div>
+            <div class="form-group">
+              <label for="endDate"><i class="fas fa-calendar-check"></i> End Date</label>
+              <input type="date" id="endDate" required>
+            </div>
+            <div class="form-group">
+              <label for="venue"><i class="fas fa-map-marker-alt"></i> Venue</label>
+              <input type="text" id="venue" placeholder="Enter venue" required>
+            </div>
+            <div class="form-group">
+              <label for="description"><i class="fas fa-info-circle"></i> Description</label>
+              <textarea id="description" rows="3" placeholder="Enter tournament description"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="price"><i class="fas fa-dollar-sign"></i> Price</label>
+              <input type="number" id="price" value="0" min="0" step="0.01">
+            </div>
+            <div class="form-buttons">
+              <button type="button" onclick="saveTournament()">
+                <i class="fas fa-save"></i> Save Tournament
+              </button>
+              <button type="button" class="secondary" onclick="cancelTournamentForm()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <div id="tournamentsList" class="card">
+          <table id="tournamentsTable">
+            <thead>
+              <tr>
+                <th><i class="fas fa-tag"></i> Name</th>
+                <th><i class="fas fa-calendar-day"></i> Start Date</th>
+                <th><i class="fas fa-calendar-check"></i> End Date</th>
+                <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+                <th><i class="fas fa-dollar-sign"></i> Price</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tournamentsTableBody">
+              <!-- Tournament data will be populated here -->
+            </tbody>
+          </table>
+          <div id="emptyTournaments" class="empty-state" style="display: none;">
+            <i class="fas fa-trophy"></i>
+            <p>No tournaments found. Create your first tournament!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="matches" class="tabcontent">
+      <div class="section">
+        <h2><i class="fas fa-basketball-ball"></i> Matches</h2>
+        
+        <div class="card">
+          <div class="form-group">
+            <label for="tournamentSelect"><i class="fas fa-filter"></i> Select Tournament</label>
+            <select id="tournamentSelect" onchange="loadMatches()">
+              <option value="">Select a tournament</option>
+            </select>
+          </div>
+          
+          <button onclick="showMatchForm()">
+            <i class="fas fa-plus"></i> Add Match
+          </button>
+        </div>
+        
+        <div id="matchForm" style="display: none;" class="card">
+          <div class="form-header">
+            <h3 id="matchFormTitle"><i class="fas fa-plus-circle"></i> Add Match</h3>
+            <button class="close-btn" onclick="cancelMatchForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <form id="newMatchForm">
+            <input type="hidden" id="matchId">
+            <div class="form-group">
+              <label for="matchTournament"><i class="fas fa-trophy"></i> Tournament</label>
+              <select id="matchTournament" required>
+                <option value="">Select a tournament</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="teamA"><i class="fas fa-users"></i> Team A</label>
+              <input type="text" id="teamA" placeholder="Enter team name" required>
+            </div>
+            <div class="form-group">
+              <label for="teamB"><i class="fas fa-users"></i> Team B</label>
+              <input type="text" id="teamB" placeholder="Enter team name" required>
+            </div>
+            <div class="form-group">
+              <label for="scoreA"><i class="fas fa-chart-bar"></i> Score A</label>
+              <input type="number" id="scoreA" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="scoreB"><i class="fas fa-chart-bar"></i> Score B</label>
+              <input type="number" id="scoreB" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="matchDate"><i class="fas fa-calendar-alt"></i> Date</label>
+              <input type="date" id="matchDate" required>
+            </div>
+            <div class="form-group">
+              <label for="matchTime"><i class="fas fa-clock"></i> Time</label>
+              <input type="time" id="matchTime" required>
+            </div>
+            <div class="form-group">
+              <label for="matchVenue"><i class="fas fa-map-marker-alt"></i> Venue</label>
+              <input type="text" id="matchVenue" placeholder="Enter venue" required>
+            </div>
+            <div class="form-group">
+              <label for="matchStatus"><i class="fas fa-flag"></i> Status</label>
+              <select id="matchStatus" required>
+                <option value="upcoming">Upcoming</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-buttons">
+              <button type="button" onclick="saveMatch()">
+                <i class="fas fa-save"></i> Save Match
+              </button>
+              <button type="button" class="secondary" onclick="cancelMatchForm()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <div id="matchesList" class="card">
+          <table id="matchesTable">
+            <thead>
+              <tr>
+                <th><i class="fas fa-users"></i> Team A</th>
+                <th><i class="fas fa-users"></i> Team B</th>
+                <th><i class="fas fa-chart-bar"></i> Score</th>
+                <th><i class="fas fa-calendar-alt"></i> Date</th>
+                <th><i class="fas fa-clock"></i> Time</th>
+                <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+                <th><i class="fas fa-flag"></i> Status</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody id="matchesTableBody">
+              <!-- Match data will be populated here -->
+            </tbody>
+          </table>
+          <div id="emptyMatches" class="empty-state" style="display: none;">
+            <i class="fas fa-basketball-ball"></i>
+            <p>No matches found. Select a tournament or create new matches.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="leaderboards" class="tabcontent">
+      <div class="section">
+        <h2><i class="fas fa-medal"></i> Leaderboards</h2>
+        
+        <div class="card">
+          <div class="form-group">
+            <label for="leaderboardTournament"><i class="fas fa-filter"></i> Select Tournament</label>
+            <select id="leaderboardTournament" onchange="loadLeaderboard()">
+              <option value="">Select a tournament</option>
+            </select>
+          </div>
+          
+          <button onclick="showLeaderboardForm()">
+            <i class="fas fa-plus"></i> Add Team to Leaderboard
+          </button>
+        </div>
+        
+        <div id="leaderboardForm" style="display: none;" class="card">
+          <div class="form-header">
+            <h3><i class="fas fa-plus-circle"></i> Add Team to Leaderboard</h3>
+            <button class="close-btn" onclick="cancelLeaderboardForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <form id="newLeaderboardForm">
+            <input type="hidden" id="leaderboardId">
+            <div class="form-group">
+              <label for="leaderboardTeamTournament"><i class="fas fa-trophy"></i> Tournament</label>
+              <select id="leaderboardTeamTournament" required>
+                <option value="">Select a tournament</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="teamName"><i class="fas fa-users"></i> Team Name</label>
+              <input type="text" id="teamName" placeholder="Enter team name" required>
+            </div>
+            <div class="form-group">
+              <label for="wins"><i class="fas fa-check-circle"></i> Wins</label>
+              <input type="number" id="wins" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="losses"><i class="fas fa-times-circle"></i> Losses</label>
+              <input type="number" id="losses" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="points"><i class="fas fa-star"></i> Points</label>
+              <input type="number" id="points" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="pointsScored"><i class="fas fa-plus-circle"></i> Points Scored</label>
+              <input type="number" id="pointsScored" value="0" min="0">
+            </div>
+            <div class="form-group">
+              <label for="pointsAgainst"><i class="fas fa-minus-circle"></i> Points Against</label>
+              <input type="number" id="pointsAgainst" value="0" min="0">
+            </div>
+            <div class="form-buttons">
+              <button type="button" onclick="saveLeaderboardTeam()">
+                <i class="fas fa-save"></i> Save Team
+              </button>
+              <button type="button" class="secondary" onclick="cancelLeaderboardForm()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <div id="leaderboardList" class="card">
+          <table id="leaderboardTable">
+            <thead>
+              <tr>
+                <th><i class="fas fa-hashtag"></i> Rank</th>
+                <th><i class="fas fa-users"></i> Team</th>
+                <th><i class="fas fa-check-circle"></i> Wins</th>
+                <th><i class="fas fa-times-circle"></i> Losses</th>
+                <th><i class="fas fa-star"></i> Points</th>
+                <th><i class="fas fa-plus-circle"></i> Points Scored</th>
+                <th><i class="fas fa-minus-circle"></i> Points Against</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardTableBody">
+              <!-- Leaderboard data will be populated here -->
+            </tbody>
+          </table>
+          <div id="emptyLeaderboard" class="empty-state" style="display: none;">
+            <i class="fas fa-medal"></i>
+            <p>No leaderboard data found. Select a tournament or add teams.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript code is preserved as requested -->
+</body>
+</html>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTournaments();
+      populateTournamentSelects();
+    });
+
+    function openTab(evt, tabName) {
+      var tabcontent = document.getElementsByClassName("tabcontent");
+      for (var i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      
+      var tablinks = document.getElementsByClassName("tablinks");
+      for (var i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    async function loadTournaments() {
+      try {
+        const response = await fetch('/api/tournaments');
+        const tournaments = await response.json();
+        
+        const tbody = document.getElementById('tournamentsTableBody');
+        tbody.innerHTML = '';
+        
+        tournaments.forEach(tournament => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${tournament.name}</td>
+            <td>${new Date(tournament.startDate).toLocaleDateString()}</td>
+            <td>${new Date(tournament.endDate).toLocaleDateString()}</td>
+            <td>${tournament.venue}</td>
+            <td>${tournament.price}</td>
+            <td>
+              <button onclick="editTournament('${tournament._id}')">Edit</button>
+              <button onclick="deleteTournament('${tournament._id}')">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading tournaments:', err);
+        alert('Failed to load tournaments');
+      }
+    }
+
+    async function populateTournamentSelects() {
+      try {
+        const response = await fetch('/api/tournaments');
+        const tournaments = await response.json();
+        
+        const selects = [
+          document.getElementById('tournamentSelect'),
+          document.getElementById('matchTournament'),
+          document.getElementById('leaderboardTournament'),
+          document.getElementById('leaderboardTeamTournament')
+        ];
+        
+        selects.forEach(select => {
+          if (!select) return;
+          
+          select.innerHTML = '<option value="">Select a tournament</option>';
+          
+          tournaments.forEach(tournament => {
+            const option = document.createElement('option');
+            option.value = tournament._id;
+            option.textContent = tournament.name;
+            select.appendChild(option);
+          });
+        });
+      } catch (err) {
+        console.error('Error loading tournaments for selects:', err);
+      }
+    }
+
+    function showTournamentForm() {
+      document.getElementById('tournamentFormTitle').textContent = 'Add Tournament';
+      document.getElementById('tournamentId').value = '';
+      document.getElementById('newTournamentForm').reset();
+      document.getElementById('tournamentForm').style.display = 'block';
+    }
+
+    function cancelTournamentForm() {
+      document.getElementById('tournamentForm').style.display = 'none';
+    }
+
+    async function saveTournament() {
+      try {
+        const tournamentId = document.getElementById('tournamentId').value;
+        const tournament = {
+          name: document.getElementById('name').value,
+          startDate: document.getElementById('startDate').value,
+          endDate: document.getElementById('endDate').value,
+          venue: document.getElementById('venue').value,
+          description: document.getElementById('description').value,
+          price: parseFloat(document.getElementById('price').value) || 0
+        };
+        
+        let response;
+        if (tournamentId) {
+          response = await fetch(`/api/tournaments/${tournamentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tournament)
+          });
+        } else {
+          response = await fetch('/api/tournaments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tournament)
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error('Failed to save tournament');
+        }
+        
+        document.getElementById('tournamentForm').style.display = 'none';
+        loadTournaments();
+        populateTournamentSelects();
+        alert('Tournament saved successfully');
+      } catch (err) {
+        console.error('Error saving tournament:', err);
+        alert('Failed to save tournament');
+      }
+    }
+
+    async function editTournament(id) {
+      try {
+        const response = await fetch(`/api/tournaments/${id}`);
+        const tournament = await response.json();
+        
+        document.getElementById('tournamentFormTitle').textContent = 'Edit Tournament';
+        document.getElementById('tournamentId').value = tournament._id;
+        document.getElementById('name').value = tournament.name;
+        document.getElementById('startDate').value = new Date(tournament.startDate).toISOString().split('T')[0];
+        document.getElementById('endDate').value = new Date(tournament.endDate).toISOString().split('T')[0];
+        document.getElementById('venue').value = tournament.venue;
+        document.getElementById('description').value = tournament.description || '';
+        document.getElementById('price').value = tournament.price;
+        
+        document.getElementById('tournamentForm').style.display = 'block';
+      } catch (err) {
+        console.error('Error fetching tournament:', err);
+        alert('Failed to load tournament details');
+      }
+    }
+
+    async function deleteTournament(id) {
+      if (!confirm('Are you sure you want to delete this tournament?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/tournaments/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete tournament');
+        }
+        
+        loadTournaments();
+        populateTournamentSelects();
+        alert('Tournament deleted successfully');
+      } catch (err) {
+        console.error('Error deleting tournament:', err);
+        alert('Failed to delete tournament');
+      }
+    }
+
+    async function loadMatches() {
+      const tournamentId = document.getElementById('tournamentSelect').value;
+      if (!tournamentId) {
+        document.getElementById('matchesTableBody').innerHTML = '';
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/matches/tournament/${tournamentId}`);
+        const matches = await response.json();
+        
+        const tbody = document.getElementById('matchesTableBody');
+        tbody.innerHTML = '';
+        
+        matches.forEach(match => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${match.teamA}</td>
+            <td>${match.teamB}</td>
+            <td>${match.scoreA} - ${match.scoreB}</td>
+            <td>${new Date(match.date).toLocaleDateString()}</td>
+            <td>${match.time}</td>
+            <td>${match.venue}</td>
+            <td>${match.status}</td>
+            <td>
+              <button onclick="editMatch('${match._id}')">Edit</button>
+              <button onclick="deleteMatch('${match._id}')">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading matches:', err);
+        alert('Failed to load matches');
+      }
+    }
+
+    function showMatchForm() {
+      document.getElementById('matchFormTitle').textContent = 'Add Match';
+      document.getElementById('matchId').value = '';
+      document.getElementById('newMatchForm').reset();
+      document.getElementById('matchTournament').value = document.getElementById('tournamentSelect').value;
+      document.getElementById('matchForm').style.display = 'block';
+    }
+
+    function cancelMatchForm() {
+      document.getElementById('matchForm').style.display = 'none';
+    }
+
+    async function saveMatch() {
+      try {
+        const matchId = document.getElementById('matchId').value;
+        const match = {
+          tournamentId: document.getElementById('matchTournament').value,
+          teamA: document.getElementById('teamA').value,
+          teamB: document.getElementById('teamB').value,
+          scoreA: parseInt(document.getElementById('scoreA').value) || 0,
+          scoreB: parseInt(document.getElementById('scoreB').value) || 0,
+          date: document.getElementById('matchDate').value,
+          time: document.getElementById('matchTime').value,
+          venue: document.getElementById('matchVenue').value,
+          status: document.getElementById('matchStatus').value
+        };
+        
+        if (match.status === 'completed') {
+          match.winner = match.scoreA > match.scoreB ? match.teamA : match.teamB;
+        }
+        
+        let response;
+        if (matchId) {
+          response = await fetch(`/api/matches/${matchId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(match)
+          });
+        } else {
+          response = await fetch('/api/matches', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(match)
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error('Failed to save match');
+        }
+        
+        document.getElementById('matchForm').style.display = 'none';
+        loadMatches();
+        alert('Match saved successfully');
+      } catch (err) {
+        console.error('Error saving match:', err);
+        alert('Failed to save match');
+      }
+    }
+
+    async function editMatch(id) {
+      try {
+        const response = await fetch(`/api/matches/${id}`);
+        const match = await response.json();
+        
+        document.getElementById('matchFormTitle').textContent = 'Edit Match';
+        document.getElementById('matchId').value = match._id;
+        document.getElementById('matchTournament').value = match.tournamentId;
+        document.getElementById('teamA').value = match.teamA;
+        document.getElementById('teamB').value = match.teamB;
+        document.getElementById('scoreA').value = match.scoreA;
+        document.getElementById('scoreB').value = match.scoreB;
+        document.getElementById('matchDate').value = new Date(match.date).toISOString().split('T')[0];
+        document.getElementById('matchTime').value = match.time;
+        document.getElementById('matchVenue').value = match.venue;
+        document.getElementById('matchStatus').value = match.status;
+        
+        document.getElementById('matchForm').style.display = 'block';
+      } catch (err) {
+        console.error('Error fetching match:', err);
+        alert('Failed to load match details');
+      }
+    }
+
+    async function deleteMatch(id) {
+      if (!confirm('Are you sure you want to delete this match?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/matches/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete match');
+        }
+        
+        loadMatches();
+        alert('Match deleted successfully');
+      } catch (err) {
+        console.error('Error deleting match:', err);
+        alert('Failed to delete match');
+      }
+    }
+
+    async function loadLeaderboard() {
+      const tournamentId = document.getElementById('leaderboardTournament').value;
+      if (!tournamentId) {
+        document.getElementById('leaderboardTableBody').innerHTML = '';
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/leaderboard/${tournamentId}`);
+        const leaderboard = await response.json();
+        
+        const tbody = document.getElementById('leaderboardTableBody');
+        tbody.innerHTML = '';
+        
+        leaderboard.forEach(team => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${team.rank || '-'}</td>
+            <td>${team.teamName}</td>
+            <td>${team.wins}</td>
+            <td>${team.losses}</td>
+            <td>${team.points}</td>
+            <td>${team.pointsScored}</td>
+            <td>${team.pointsAgainst}</td>
+            <td>
+              <button onclick="editLeaderboardTeam('${team._id}')">Edit</button>
+              <button onclick="deleteLeaderboardTeam('${team._id}')">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading leaderboard:', err);
+        alert('Failed to load leaderboard');
+      }
+    }
+
+    function showLeaderboardForm() {
+      document.getElementById('leaderboardId').value = '';
+      document.getElementById('newLeaderboardForm').reset();
+      document.getElementById('leaderboardTeamTournament').value = document.getElementById('leaderboardTournament').value;
+      document.getElementById('leaderboardForm').style.display = 'block';
+    }
+
+    function cancelLeaderboardForm() {
+      document.getElementById('leaderboardForm').style.display = 'none';
+    }
+    async function saveLeaderboardTeam() {
+  try {
+    const leaderboardId = document.getElementById('leaderboardId').value;
+    const team = {
+      tournamentId: document.getElementById('leaderboardTeamTournament').value,
+      teamName: document.getElementById('teamName').value,
+      wins: parseInt(document.getElementById('wins').value) || 0,
+      losses: parseInt(document.getElementById('losses').value) || 0,
+      points: parseInt(document.getElementById('points').value) || 0,
+      pointsScored: parseInt(document.getElementById('pointsScored').value) || 0,
+      pointsAgainst: parseInt(document.getElementById('pointsAgainst').value) || 0,
+      updatedAt: new Date()
+    };
+    
+    console.log('Sending leaderboard data:', team);
+    
+    let response;
+    if (leaderboardId) {
+      response = await fetch(`/api/leaderboard/team/${leaderboardId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(team)
+      });
+    } else {
+      response = await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(team)
+      });
+    }
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error('Server error response:', errorData);
+      throw new Error(errorData?.message || 'Failed to save team');
+    }
+    
+    document.getElementById('leaderboardForm').style.display = 'none';
+    loadLeaderboard();
+    alert('Team saved successfully');
+  } catch (err) {
+    console.error('Error saving team:', err);
+    alert(`Failed to save team: ${err.message}`);
+  }
+}
+
+    async function editLeaderboardTeam(id) {
+      try {
+        const response = await fetch(`/api/leaderboard/team/${id}`);
+        const team = await response.json();
+        
+        document.getElementById('leaderboardId').value = team._id;
+        document.getElementById('leaderboardTeamTournament').value = team.tournamentId;
+        document.getElementById('teamName').value = team.teamName;
+        document.getElementById('wins').value = team.wins;
+        document.getElementById('losses').value = team.losses;
+        document.getElementById('points').value = team.points;
+        document.getElementById('pointsScored').value = team.pointsScored;
+        document.getElementById('pointsAgainst').value = team.pointsAgainst;
+        
+        document.getElementById('leaderboardForm').style.display = 'block';
+      } catch (err) {
+        console.error('Error fetching team:', err);
+        alert('Failed to load team details');
+      }
+    }
+async function deleteLeaderboardTeam(id) {
+  if (!confirm('Are you sure you want to delete this team?')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/leaderboard/team/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to delete team');
+    }
+    
+    loadLeaderboard();
+    alert('Team deleted successfully');
+  } catch (err) {
+    console.error('Error deleting team:', err);
+    alert('Failed to delete team');
+  }
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PBL Tournaments</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0062ff;
+      --primary-dark: #0046b8;
+      --primary-light: #e6f0ff;
+      --secondary: #173f7a;
+      --accent: #00c2ff;
+      --light: #f8faff;
+      --dark: #0a1f3d;
+      --gradient: linear-gradient(135deg, #0062ff 0%, #00c2ff 100%);
+      --shadow-sm: 0 4px 6px rgba(10, 31, 61, 0.05);
+      --shadow-md: 0 6px 12px rgba(10, 31, 61, 0.08);
+      --shadow-lg: 0 12px 24px rgba(10, 31, 61, 0.12);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .register-btn {
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+  
+  .register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+  }
+  
+  .tournament-footer {
+    padding: 15px 20px;
+    background-color: var(--primary-light);
+    border-top: 1px solid rgba(0, 98, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    color: var(--primary);
+  }
+    body {
+      background-color: var(--light);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--dark);
+      background: white;
+      overflow-x: hidden;
+      position: relative;
+      padding-top: 80px; /* Add padding to account for fixed header */
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 12a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm4 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-8 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm4-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-8 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm8-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-8 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm8-4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-8 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z' fill='%230062ff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Navigation Bar Styles */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: rgba(248, 250, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 98, 255, 0.1);
+      box-shadow: 0 4px 6px rgba(10, 31, 61, 0.05);
+    }
+    
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0062ff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-links a {
+      color: #173f7a;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .nav-links a:hover {
+      color: #0062ff;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(135deg, #0062ff 0%, #00c2ff 100%);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    .mobile-menu {
+      display: none;
+      cursor: pointer;
+    }
+    
+    .mobile-menu div {
+      width: 25px;
+      height: 3px;
+      background-color: #0062ff;
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .page-header {
+      background: var(--gradient);
+      color: white;
+      padding: 40px 0;
+      margin-bottom: 40px;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 140%;
+      height: 200%;
+      background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      transform: rotate(30deg);
+      animation: headerBg 60s linear infinite;
+      opacity: 0.1;
+    }
+
+    @keyframes headerBg {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .page-header .container {
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      display: inline-block;
+      animation: bounce 2s ease infinite;
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 194, 255, 0.4);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .page-header h1 {
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 2.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .content-container {
+      padding-bottom: 60px;
+    }
+
+    .card-container {
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+      margin-bottom: 40px;
+    }
+
+    .nav-tabs {
+      border: none;
+      padding: 0;
+      background: white;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: var(--dark);
+      font-weight: 600;
+      padding: 16px 24px;
+      border-radius: 0;
+      margin-right: 0;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .nav-tabs .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--gradient);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .nav-tabs .nav-link.active {
+      color: var(--primary);
+      background: white;
+    }
+
+    .nav-tabs .nav-link.active::after {
+      opacity: 1;
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+      background: var(--primary-light);
+    }
+
+    .tab-content {
+      padding: 24px;
+      position: relative;
+    }
+
+    .tournament-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      transition: var(--transition);
+      cursor: pointer;
+      background: white;
+      border: 1px solid rgba(0, 98, 255, 0.08);
+    }
+
+    .tournament-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .tournament-header {
+      background: var(--gradient);
+      color: white;
+      padding: 18px 20px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tournament-header i {
+      margin-right: 8px;
+    }
+
+    .price-badge {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(4px);
+    }
+
+    .tournament-body {
+      padding: 20px;
+    }
+
+    .tournament-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+
+    .tournament-detail {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-grow: 1;
+      min-width: 48%;
+    }
+
+    .tournament-detail i {
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .tournament-footer {
+      padding: 15px 20px;
+      background-color: var(--primary-light);
+      border-top: 1px solid rgba(0, 98, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .tournament-footer i {
+      transition: var(--transition);
+    }
+
+    .tournament-card:hover .tournament-footer i {
+      transform: translateX(4px);
+    }
+
+    .refresh-button {
+      margin-bottom: 24px;
+      text-align: right;
+    }
+
+    .refresh-button .btn {
+      padding: 8px 16px;
+      border-radius: 30px;
+      transition: var(--transition);
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0, 98, 255, 0.2);
+      color: var(--primary);
+    }
+
+    .refresh-button .btn:hover {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .refresh-button .btn i {
+      transition: var(--transition);
+    }
+
+    .refresh-button .btn:hover i {
+      transform: rotate(180deg);
+    }
+
+    .matches-container {
+      display: none;
+    }
+
+    .breadcrumb {
+      margin-bottom: 24px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 30px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .breadcrumb-item a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .breadcrumb-item a:hover {
+      color: var(--primary-dark);
+    }
+
+    .breadcrumb-item.active {
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .stats-button {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .action-btn {
+      border-radius: 30px;
+      padding: 12px 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      border: none;
+    }
+
+    .action-btn.btn-primary {
+      background: var(--gradient);
+    }
+
+    .action-btn.btn-success {
+      background: linear-gradient(135deg, #0098ff 0%, #00c2ff 100%);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .match-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      position: relative;
+      border: 1px solid rgba(0, 98, 255, 0.08);
+    }
+
+    .match-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .match-card.upcoming {
+      border-left: 4px solid #0098ff;
+    }
+
+    .match-card.completed {
+      border-left: 4px solid #00c864;
+    }
+
+    .match-header {
+      padding: 16px;
+      text-align: center;
+      font-weight: 600;
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .team {
+      text-align: center;
+      width: 40%;
+    }
+
+    .team-name {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .team-score {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .vs {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .match-details {
+      padding: 0 20px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .match-detail {
+      width: calc(50% - 5px);
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: var(--dark);
+      background: var(--light);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .match-detail i {
+      width: 18px;
+      margin-right: 8px;
+      color: var(--primary);
+    }
+
+    .winner-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, #00c864 0%, #00ad7c 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(0, 200, 100, 0.2);
+    }
+
+    .no-tournaments {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--dark);
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .no-tournaments i {
+      color: var(--primary-light);
+      margin-bottom: 20px;
+    }
+
+    .no-tournaments h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .loading-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
+    .leaderboard-table {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .leaderboard-table thead {
+      background: var(--gradient);
+      color: white;
+    }
+
+    .leaderboard-table th {
+      font-weight: 600;
+      padding: 16px 12px;
+      border: none;
+    }
+
+    .leaderboard-table td {
+      padding: 14px 12px;
+      border-color: rgba(0, 98, 255, 0.08);
+      vertical-align: middle;
+    }
+
+    .leaderboard-table tr:hover {
+      background-color: var(--primary-light);
+    }
+
+    .team-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      text-align: center;
+      background-color: var(--light);
+      border-radius: 50%;
+      margin-right: 10px;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .rank-1 {
+      background: linear-gradient(135deg, #FFD700 0%, #FFC800 100%);
+      color: #5F4B00;
+      box-shadow: 0 3px 6px rgba(255, 215, 0, 0.3);
+    }
+
+    .rank-2 {
+      background: linear-gradient(135deg, #E0E0E0 0%, #C8C8C8 100%);
+      color: #404040;
+      box-shadow: 0 3px 6px rgba(200, 200, 200, 0.3);
+    }
+
+    .rank-3 {
+      background: linear-gradient(135deg, #CD7F32 0%, #B06E2B 100%);
+      color: white;
+      box-shadow: 0 3px 6px rgba(205, 127, 50, 0.3);
+    }
+
+    .admin-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 30px;
+      background: white;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .admin-link:hover {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .page-header {
+        padding: 30px 0;
+        top: 100px;
+      }
+      
+      .tab-content {
+        padding: 16px;
+      }
+      
+      .match-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tournament-details {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .tournament-detail {
+        min-width: 100%;
+      }
+      
+      .action-btn {
+        padding: 10px 16px;
+      }
+      
+      .mobile-menu {
+        display: block;
+        z-index: 101;
+      }
+      
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: #f8faff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.5s ease;
+        z-index: 100;
+        box-shadow: 0 12px 24px rgba(10, 31, 61, 0.12);
+      }
+      
+      .nav-links.active {
+        right: 0;
+      }
+      
+      .mobile-menu.active div:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 6px);
+      }
+      .mains{
+        background-color:white;
+      }
+      
+      .mobile-menu.active div:nth-child(2) {
+        opacity: 0;
+      }
+      
+      .mobile-menu.active div:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -6px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <div class="header">
+    <div class="logo">
+      PBL
+    </div>
+    <nav>
+      <div class="mobile-menu">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="#">Matches</a>
+        <a href="/register">Register</a>
+        <a href="/about">About Us</a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="page-header text-center">
+    <div class="container">
+      <div class="header-icon">
+        <i class="fas fa-basketball-ball"></i>
+      </div>
+      <h1>PBL Tournaments</h1>
+      <p>Your gateway to upcoming tournaments, match statistics and real-time leaderboards</p>
+    </div>
+  </div>
+<div class="mains">
+
+  <div class="container content-container">
+    <div class="card-container">
+      <div class="tab-card">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+          
+            <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">
+              <i class="fas fa-calendar-alt"></i> Upcoming Tournaments
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="false">
+              <i class="fas fa-list"></i> All Tournaments
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+          <div class="refresh-button">
+            <button id="refreshData" class="btn">
+              <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+          </div>
+          
+          <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          
+          <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+            <div id="upcomingTournamentsList">
+              <!-- Tournaments will be loaded here -->
+            </div>
+          </div>
+          
+          <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
+            <div id="allTournamentsList">
+              <!-- All tournaments will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="tournamentContainer" class="matches-container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#" id="backToTournaments"><i class="fas fa-chevron-left"></i> Tournaments</a></li>
+            <li class="breadcrumb-item active" id="tournamentBreadcrumb"></li>
+          </ol>
+        </nav>
+        
+        <div class="stats-button">
+          <button id="viewMatches" class="btn btn-primary action-btn">
+            <i class="fas fa-basketball-ball"></i> Matches
+          </button>
+          <button id="viewLeaderboard" class="btn btn-success action-btn">
+            <i class="fas fa-trophy"></i> Leaderboard
+          </button>
+        </div>
+        
+        <div id="matchesSection">
+          <h3 id="matchesTitle" class="mb-4"></h3>
+          <div id="matchesList" class="match-grid">
+            <!-- Matches will be loaded here -->
+          </div>
+        </div>
+        
+        <div id="leaderboardSection" style="display:none;">
+          <h3 id="leaderboardTitle" class="mb-4"></h3>
+          <div class="table-responsive">
+            <table class="table table-hover leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Team</th>
+                  <th>W</th>
+                  <th>L</th>
+                  <th>Points</th>
+                  <th>PF</th>
+                  <th>PA</th>
+                  <th>+/-</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardList">
+                <!-- Leaderboard data will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center">
+        <a href="/admin" class="admin-link">
+          <i class="fas fa-lock"></i> Admin Only
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+  <!-- Existing JavaScript remains unchanged -->
+  <script>
+    $(document).ready(function() {
+      let currentTournamentId = null;
+      
+      loadAllTournaments();
+      
+      $('#refreshData').click(function() {
+        loadAllTournaments();
+      });
+      
+      $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (e.target.id === 'all-tab' && $('#allTournamentsList').children().length === 0) {
+          loadAllTournaments(false);
+        }
+      });
+      
+      $('#backToTournaments').click(function(e) {
+        e.preventDefault();
+        $('#tournamentContainer').hide();
+        $('#myTabContent').show();
+      });
+      
+      $('#viewMatches').click(function() {
+        $('#leaderboardSection').hide();
+        $('#matchesSection').show();
+      });
+      
+      $('#viewLeaderboard').click(function() {
+        $('#matchesSection').hide();
+        $('#leaderboardSection').show();
+        loadLeaderboard(currentTournamentId);
+      });
+      
+      function loadAllTournaments(showLoading = true) {
+        if (showLoading) {
+          $('#loadingSpinner').show();
+        }
+        
+        $.ajax({
+          url: '/api/tournaments',
+          type: 'GET',
+          success: function(tournaments) {
+            const upcomingTournamentsList = $('#upcomingTournamentsList');
+            upcomingTournamentsList.empty();
+            
+            const allTournamentsList = $('#allTournamentsList');
+            allTournamentsList.empty();
+            
+            if (tournaments.length === 0) {
+              const noTournamentsHtml = `
+                <div class="no-tournaments">
+                  <i class="fas fa-trophy fa-3x mb-3 text-muted"></i>
+                  <h4>No tournaments available</h4>
+                  <p>Check back later for upcoming tournaments</p>
+                </div>
+              `;
+              upcomingTournamentsList.html(noTournamentsHtml);
+              allTournamentsList.html(noTournamentsHtml);
+            } else {
+              const today = new Date();
+              
+              const upcomingTournaments = tournaments.filter(tournament => 
+                new Date(tournament.startDate) >= today
+              );
+              
+              if (upcomingTournaments.length === 0) {
+                upcomingTournamentsList.html(`
+                  <div class="no-tournaments">
+                    <i class="fas fa-calendar fa-3x mb-3 text-muted"></i>
+                    <h4>No upcoming tournaments</h4>
+                    <p>Check back later for future events</p>
+                  </div>
+                `);
+              } else {
+                displayTournaments(upcomingTournaments, upcomingTournamentsList);
+              }
+              
+              displayTournaments(tournaments, allTournamentsList);
+            }
+            
+            $('#loadingSpinner').hide();
+          },
+          error: function(xhr) {
+            $('#loadingSpinner').hide();
+            alert('Error loading tournaments: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+          }
+        });
+      }
+      
+      function displayTournaments(tournaments, container) {
+        tournaments.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        
+        tournaments.forEach(tournament => {
+          const startDate = new Date(tournament.startDate).toLocaleDateString();
+          const endDate = new Date(tournament.endDate).toLocaleDateString();
+          const formattedPrice = tournament.price > 0 ? `₹${tournament.price.toLocaleString()}` : 'Free Entry';
+          
+          const tournamentCard = $(`
+            <div class="tournament-card" data-id="${tournament._id}">
+              <div class="tournament-header">
+                <div>
+                  <i class="fas fa-trophy"></i> ${tournament.name}
+                </div>
+                <div class="price-badge">
+                  <i class="fas fa-tag"></i> ${formattedPrice}
+                </div>
+              </div>
+              <div class="tournament-body">
+                <div class="tournament-details">
+                  <div class="tournament-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${startDate} - ${endDate}</span>
+                  </div>
+                  <div class="tournament-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${tournament.venue}</span>
+                  </div>
+                </div>
+                <p>${tournament.description || 'No description available'}</p>
+              </div>
+              <div class="tournament-footer">
+                <small>Click to view tournament details      
+                <i class="fas fa-chevron-right"></i></small>
+
+                <div class="tournament-footer">
+  
+  <a href="/register" class="register-btn">
+    <i class="fas fa-user-plus"></i> Register
+  </a>
+</div>
+              </div>
+            </div>
+          `);
+          
+          tournamentCard.click(function() {
+            currentTournamentId = tournament._id;
+            showTournamentDetails(tournament);
+          });
+          
+          container.append(tournamentCard);
+        });
+      }
+      
+      function showTournamentDetails(tournament) {
+        $('#tournamentBreadcrumb').text(tournament.name);
+        $('#matchesTitle').text(`${tournament.name} - Matches`);
+        $('#leaderboardTitle').text(`${tournament.name} - Leaderboard`);
+        $('#myTabContent').hide();
+        $('#tournamentContainer').show();
+        $('#matchesSection').show();
+        $('#leaderboardSection').hide();
+        $('#loadingSpinner').show();
+        
+        loadMatches(tournament._id);
+      }
+      
+      function loadMatches(tournamentId) {
+        $.ajax({
+          url: `/api/matches/tournament/${tournamentId}`,
+          type: 'GET',
+          success: function(matches) {
+            const matchesList = $('#matchesList');
+            matchesList.empty();
+            
+            if (matches.length === 0) {
+              matchesList.html(`
+                <div class="col-12 text-center p-5">
+                  <i class="fas fa-basketball-ball fa-3x mb-3 text-muted"></i>
+                  <h4>No matches scheduled yet</h4>
+                  <p>Check back later for match details</p>
+                </div>
+              `);
+            } else {
+              const upcomingMatches = matches.filter(match => match.status === 'upcoming');
+              const completedMatches = matches.filter(match => match.status === 'completed');
+              
+              const sortByDate = (a, b) => new Date(a.date) - new Date(b.date);
+              upcomingMatches.sort(sortByDate);
+              completedMatches.sort(sortByDate);
+              
+              const sortedMatches = [...upcomingMatches, ...completedMatches];
+              
+              sortedMatches.forEach(match => {
+                const matchDate = new Date(match.date).toLocaleDateString();
+                const winnerTeam = match.status === 'completed' ? 
+                  (match.scoreA > match.scoreB ? match.teamA : match.teamB) : 'N/A';
+                
+                const matchCard = $(`
+                  <div class="match-card ${match.status}">
+                    <div class="match-header">
+                      <strong>${matchDate}</strong>
+                    </div>
+                    <div class="match-teams">
+                      <div class="team">
+                        <div class="team-name">${match.teamA}</div>
+                        <div class="team-score">${match.scoreA || '0'}</div>
+                      </div>
+                      <div class="vs">VS</div>
+                      <div class="team">
+                        <div class="team-name">${match.teamB}</div>
+                        <div class="team-score">${match.scoreB || '0'}</div>
+                      </div>
+                    </div>
+                    <div class="match-details">
+                      <div class="match-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>${match.time}</span>
+                      </div>
+                      <div class="match-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${match.venue}</span>
+                      </div>
+                      <div class="match-detail">
+                        <i class="fas fa-info-circle"></i>
+                        <span>${match.status === 'upcoming' ? 'Upcoming' : 'Completed'}</span>
+                      </div>
+                    </div>
+                    ${match.status === 'completed' ? `
+                      <div class="winner-badge">
+                        ${winnerTeam}
+                      </div>
+                    ` : ''}
+                  </div>
+                `);
+                
+                matchesList.append(matchCard);
+              });
+            }
+            
+            $('#loadingSpinner').hide();
+          },
+          error: function(xhr) {
+            $('#loadingSpinner').hide();
+            alert('Error loading matches: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+          }
+        });
+      }
+      
+      function loadLeaderboard(tournamentId) {
+        $('#loadingSpinner').show();
+        
+        $.ajax({
+          url: `/api/leaderboard/${tournamentId}`,
+          type: 'GET',
+          success: function(teams) {
+            const leaderboardList = $('#leaderboardList');
+            leaderboardList.empty();
+            
+            if (teams.length === 0) {
+              leaderboardList.html(`
+                <tr>
+                  <td colspan="8" class="text-center py-5">
+                    <i class="fas fa-trophy fa-2x mb-3 text-muted"></i>
+                    <h5>No leaderboard data available yet</h5>
+                    <p>Check back after matches have been played</p>
+                  </td>
+                </tr>
+              `);
+            } else {
+              teams.forEach((team, index) => {
+                const pointDiff = team.pointsScored - team.pointsAgainst;
+                const diffClass = pointDiff > 0 ? 'text-success' : pointDiff < 0 ? 'text-danger' : '';
+                const diffSign = pointDiff > 0 ? '+' : '';
+                
+                const rankClass = index < 3 ? `rank-${index+1}` : '';
+                
+                const row = $(`
+                  <tr>
+                    <td>
+                      <span class="team-rank ${rankClass}">${team.rank || index + 1}</span>
+                    </td>
+                    <td><strong>${team.teamName}</strong></td>
+                    <td>${team.wins}</td>
+                    <td>${team.losses}</td>
+                    <td><strong>${team.points}</strong></td>
+                    <td>${team.pointsScored}</td>
+                    <td>${team.pointsAgainst}</td>
+                    <td class="${diffClass}">${diffSign}${pointDiff}</td>
+                  </tr>
+                `);
+                
+                leaderboardList.append(row);
+              });
+            }
+            
+            $('#loadingSpinner').hide();
+          },
+          error: function(xhr) {
+            $('#loadingSpinner').hide();
+            alert('Error loading leaderboard: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
